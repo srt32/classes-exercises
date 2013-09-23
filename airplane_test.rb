@@ -36,50 +36,85 @@ class AirplaneTest < Minitest::Test
   #                                                   Minimum Viable CEO
   #
 
+  class Airplane
+   
+    attr_reader :seat_count
+    
+    def initialize(name,seat_count)
+      @name=name
+      @seat_count=seat_count
+    end
+
+    def rows
+      seat_count / 6
+    end
+
+    def seats
+      seats = []
+      rows.times.each do |row|
+        ("A".."F").each do |letter|
+          seats.push AirlineSeat.new("#{row}#{letter}")
+        end
+      end
+      return seats
+    end
+
+  end
+
 
   class Flight
-                def initialize(name,plane)
-                  @name = name
-                  @plane =                      plane
-          end
+   
+    attr_reader :name
 
-          def plane ; @plane ;            end
+    def initialize(name,plane)
+      @name = name
+      @plane = plane
+    end
+
+    def seats
+      plane.seats
+    end
+
+    def window_seats
+      plane.seats.select{|seat| seat.window?}
+    end
+
+    def aisle_seats
+      plane.seats.select{|seat| seat.aisle?}
+    end
+
+    def middle_seats
+      plane.seats.select{|seat| seat.middle_seat?}
+    end
+
+    def plane 
+      @plane
+    end
 
   end
 
+    def test_plane_is_created_with_a_type_and_a_seat_count
+      instance = Airplane.new("737",126)
+      assert_equal 21, instance.rows
+    end
 
-  class Airplane
-def init(name,seat_count)
-         @name=name
-        @seat_count=seat_count
-      end
+    def test_plane_seats_returns_an_array_of_airline_seats
+      instance = Airplane.new("737",126)
+      assert_equal 126, instance.seats.count
+      assert_kind_of AirlineSeat, instance.seats.first
+    end
 
-    def
-  end
+    def test_a_flight_is_created_with_a_name_and_plane
+      airplane = Airplane.new("737",126)
+      flight = Flight.new("DB123",airplane)
+      assert_equal "DB123", flight.name
+      assert_equal 126, flight.seats.count
+      assert_equal 42, flight.window_seats.count
+      assert_equal 42, flight.aisle_seats.count
+      assert_equal 42, flight.middle_seats.count
+    end
 
-  def test_plane_is_created_with_a_type_and_a_seat_count
-    skip
-    instance = Airplane.new("737",126)
-    assert_equal 21, instance.rows
-  end
 
-  def test_plane_seats_returns_an_array_of_airline_seats
-    skip
-    instance = Airplane.new("737",126)
-    assert_equal 126, instance.seats.count
-    assert_kind_of AirlineSeat, instance.seats.first
-  end
-
-  def test_a_flight_is_created_with_a_name_and_plane
-    skip
-    airplane = Airplane.new("737",126)
-    flight = Flight.new("DB123",airplane)
-    assert_equal "DB123", flight.name
-    assert_equal 126, flight.seats.count
-    assert_equal 42, flight.window_seats.count
-    assert_equal 42, flight.aisle_seats.count
-    assert_equal 42, flight.middle_seats.count
-  end
 
 
   #
@@ -87,7 +122,6 @@ def init(name,seat_count)
   # You shouldn't have to make changes to the code below this point to make
   # the test to pass. However, you will definitely need to read the code
   #
-
 
   class AirlineSeat
     def initialize(seat_number)
