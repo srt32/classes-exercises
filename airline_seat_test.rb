@@ -35,17 +35,36 @@ class AirlineSeatTest < Minitest::Test
 
 
   class AirlineSeat
-    def initialize(seat_number)
+    attr_accessor :taken
+    
+    def initialize(seat_number, taken = false)
       @seat_number = seat_number
+      @taken = taken
     end
 
     def seat_number
       @seat_number
     end
+    
+    def taken!
+      @taken = true
+    end
 
     def row
       # TODO: I don't think this works for all seats
-      seat_number[0]
+      get_seat_number
+    end
+
+    def get_seat_number
+      seat_number[0..-2]
+    end
+
+    def position
+      seat_number[-1]
+    end
+
+    def taken?
+      taken ? true : false
     end
 
     # TODO: I am pretty sure that all our planes are 6 seats wide. So that means
@@ -54,7 +73,18 @@ class AirlineSeatTest < Minitest::Test
     #
     #                          | A B C || D E F |
     def window?
-      true
+      false
+      true if ["A","F"].include?(position)
+    end
+
+    def aisle?
+      false
+      true if ["C","D"].include?(position)
+    end
+
+    def middle_seat?
+      false
+      true if ["B","E"].include?(position)
     end
 
     def legroom?
@@ -64,23 +94,19 @@ class AirlineSeatTest < Minitest::Test
   end
 
   def test_airline_seat_has_method_seat_number
-    skip
     assert AirlineSeat.instance_methods.include?(:seat_number)
   end
 
   def test_airline_seat_has_a_seat_number
-    skip
     instance = AirlineSeat.new("11A")
     assert_equal "11A", instance.seat_number
   end
 
   def test_airline_seat_has_method_row
-    skip
     assert AirlineSeat.instance_methods.include?(:row)
   end
 
   def test_airline_seat_has_the_correct_row
-    skip
     instance = AirlineSeat.new("1A")
     assert_equal "1", instance.row
 
@@ -89,24 +115,20 @@ class AirlineSeatTest < Minitest::Test
   end
 
   def test_airline_seat_has_method_position
-    skip
     assert AirlineSeat.instance_methods.include?(:position)
   end
 
   def test_airline_seat_has_a_position
-    skip
     instance = AirlineSeat.new("9F")
     assert_equal "F", instance.position
   end
 
   def test_airline_seat_has_correct_position
-    skip
     instance = AirlineSeat.new("36C")
     assert_equal "C", instance.position
   end
 
   def test_airline_seats_on_the_windows_are_window_seats
-    skip
     instance = AirlineSeat.new("10A")
     assert instance.window?
     refute instance.aisle?
@@ -119,7 +141,6 @@ class AirlineSeatTest < Minitest::Test
   end
 
   def test_airline_seats_on_the_aisles_are_aisle_seats
-    skip
     instance = AirlineSeat.new("6C")
     assert instance.aisle?
     refute instance.window?
@@ -132,7 +153,6 @@ class AirlineSeatTest < Minitest::Test
   end
 
   def test_airline_seats_in_the_middle_are_middle_seats
-    skip
     instance = AirlineSeat.new("2B")
     assert instance.middle_seat?
     refute instance.window?
@@ -145,13 +165,11 @@ class AirlineSeatTest < Minitest::Test
   end
 
   def test_airline_seat_is_not_taken_when_first_created
-    skip
     instance = AirlineSeat.new("22B")
     refute instance.taken?
   end
 
   def test_airline_seat_can_be_marked_as_taken
-    skip
     instance = AirlineSeat.new("12F")
     instance.taken!
     assert instance.taken?
