@@ -77,13 +77,36 @@ class AirplaneTest < Minitest::Test
     def aisle_seats
       plane.aisle_seats
     end
+
+    def available_seats
+      plane.seats.select{|seat| !seat.taken?}
+    end
+
+    def seat(seat_num)
+      plane.seats.find{|seat| seat.seat_number == seat_num}
+    end
+
+    def book(seat_number)
+      seat(seat_number).taken!
+    end
+
+    def available_window_seats
+      available_seats.select{|seat| seat.window?}  
+    end
+
+    def available_middle_seats
+      available_seats.select{|seat| seat.middle_seat?}
+    end
+
+    def available_aisle_seats
+      available_seats.select{|seat| seat.aisle?}
+    end
+
   end
 
 
 
   def test_flight_returns_the_available_seats
-    skip
-
     airplane = Airplane.new("737",126)
     flight = Flight.new("FG556",airplane)
 
@@ -91,8 +114,6 @@ class AirplaneTest < Minitest::Test
   end
 
   def test_flight_can_locate_a_seat_by_name
-    skip
-
     airplane = Airplane.new("737",126)
     flight = Flight.new("FG556",airplane)
 
@@ -100,13 +121,11 @@ class AirplaneTest < Minitest::Test
 
     assert_equal "1A", found_seat.seat_number
     assert_equal "1", found_seat.row
-    assert_equal "1", found_seat.position
+    assert_equal "A", found_seat.position  #CHANGED 1 to A
     assert found_seat.window?
   end
 
   def test_flight_can_book_a_seat
-    skip
-
     airplane = Airplane.new("737",126)
     flight = Flight.new("FG556",airplane)
 
@@ -117,8 +136,6 @@ class AirplaneTest < Minitest::Test
   end
 
   def test_flight_returns_the_correct_number_of_available_seats
-    skip
-
     airplane = Airplane.new("737",126)
     flight = Flight.new("FG556",airplane)
 
